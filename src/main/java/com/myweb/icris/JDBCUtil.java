@@ -22,6 +22,11 @@ public class JDBCUtil {
         return (Company) new QueryRunner(JDBCDataSource.getDataSource()).query(sql, company.getNo(), new BeanHandler(Company.class));
     }
 
+    static Company count() throws SQLException {
+        String sql = "select * from company where no = (select max(no)  from company)";
+        return (Company) new QueryRunner(JDBCDataSource.getDataSource()).query(sql, new BeanHandler(Company.class));
+    }
+
     static void insert(History history) throws SQLException {
         String sql = "insert into history(no,name,enname,date) values(?,?,?,?)";
         new QueryRunner(JDBCDataSource.getDataSource()).update(sql, history.getNo(), history.getName(), history.getEnname(), history.getDate());
@@ -39,12 +44,12 @@ public class JDBCUtil {
 
     static void insert(DocFile docFile) throws SQLException {
         String sql = "insert into docfile(id,no,name,year,submission,status) values(?,?,?,?,?,?)";
-        new QueryRunner(JDBCDataSource.getDataSource()).update(sql, docFile.getId(),docFile.getNo(), docFile.getName(), docFile.getYear(), docFile.getSubmission(), docFile.getStatus());
+        new QueryRunner(JDBCDataSource.getDataSource()).update(sql, docFile.getId(), docFile.getNo(), docFile.getName(), docFile.getYear(), docFile.getSubmission(), docFile.getStatus());
     }
 
     static void update(DocFile docFile) throws SQLException {
         String sql = "update docfile set name = ?,year = ?,submission = ?,status = ? where no= ? and id = ?";
-        new QueryRunner(JDBCDataSource.getDataSource()).update(sql, docFile.getName(), docFile.getYear(), docFile.getSubmission(), docFile.getStatus(),docFile.getNo(), docFile.getId());
+        new QueryRunner(JDBCDataSource.getDataSource()).update(sql, docFile.getName(), docFile.getYear(), docFile.getSubmission(), docFile.getStatus(), docFile.getNo(), docFile.getId());
     }
 
     static DocFile select(DocFile docFile) throws SQLException {

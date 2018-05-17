@@ -1,5 +1,6 @@
 package com.myweb.icris;
 
+import com.myweb.Start;
 import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -123,7 +124,8 @@ public class IcrisApi {
                 DocFile docFile = new DocFile();
                 docFile.setNo(no);
                 docFile.setId(e.select("td").get(3).text());
-                docFile.setName(e.select("td").get(4).text());
+                if(e.select("td").get(4).html().contains("<br>")) docFile.setName(e.select("td").get(4).html().split("<br>")[0]);
+                else docFile.setName(e.select("td").get(4).text());
                 docFile.setYear(e.select("td").get(5).text());
                 docFile.setSubmission(e.select("td").get(6).text());
                 docFile.setStatus(e.select("td").get(10).text());
@@ -133,42 +135,29 @@ public class IcrisApi {
         return docFiles;
     }
 
-
-    public static void main(String[] args) throws Exception {
-//        IcrisApi api = new IcrisApi();
-//        api.agree();
-//        api.chinese();
-//        //api.pachong(13);
-//        for (int i = 1; i < 30; i++) {
-//            final int time = i;
-//            Thread.sleep(100);
-//            new Thread(() -> {
-//                try {
-//                    api.pachong(time);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    try {
-//                        Thread.sleep(1000000);
-//                    } catch (InterruptedException e1) {
-//                        e1.printStackTrace();
-//                    }
-//                }
-//            }).start();
-//        }
+    public int getMax() throws SQLException {
+        Company company = JDBCUtil.count();
+        if (company == null) return 1;
+        else return Integer.parseInt(company.getNo());
     }
 
     public boolean pachong(int no) throws Exception {
         String comReslut = searchByNo(no);
         Company company = parseCompany(comReslut);
-        if (company == null) return false;
-        new Thread(() -> {
+        if (company == null) {
+            System.out.println("__________________________________________________________________________________");
+            System.out.println("链接失败，请先停止程序，稍候再试！！！");
+            System.out.println("__________________________________________________________________________________");
+            return false;
+        }
+        Start.executorService.execute(new Thread(() -> {
             try {
                 if (JDBCUtil.select(company) == null) JDBCUtil.insert(company);
                 else JDBCUtil.update(company);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }).start();
+        }));
         List<History> histories = parseHistory(comReslut, company.getNo());
         histories.forEach(e -> {
             if (e != null) {
@@ -184,14 +173,16 @@ public class IcrisApi {
             }
         });
         int page = parseDocumentPage(searchDocumentPage(company.getNo()));
+        if(page > 5) page = 5;
         List<DocFile> docFiles = new ArrayList<DocFile>();
         for (int i = 1; i <= page; i++) {
+            Thread.sleep(Start.SLEEP);
             List<DocFile> docFileList = parseDocument(searchDocument(company.getNo(), i, page), company.getNo());
             if (docFileList != null && docFileList.size() > 0) docFiles.addAll(docFileList);
         }
         docFiles.forEach(e -> {
             if (e != null) {
-                new Thread(() -> {
+                Start.executorService.execute(new Thread(() -> {
                     try {
                         DocFile docFile = JDBCUtil.select(e);
                         if (docFile == null) JDBCUtil.insert(e);
@@ -202,7 +193,7 @@ public class IcrisApi {
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }
-                }).start();
+                }));
             }
         });
         return true;
