@@ -61,7 +61,7 @@ public class IcrisApi {
                     company.setEnname(element.select("td").last().select("span").first().html().split("<br>")[0]);
                     company.setName(element.select("td").last().select("span").first().html().split("<br>")[1]);
                 } else {
-                    company.setName(element.select("td").last().text());
+                    company.setEnname(element.select("td").last().text());
                 }
             }
             if (i == 2) company.setType(element.select("td").last().text());

@@ -17,9 +17,9 @@ public class Start {
         IcrisApi api = new IcrisApi();
         api.agree();
         api.chinese();
-        int cur = 1;
+        int cur = 0;
         if (true) {
-            cur = api.getMax() + 1;
+            cur = api.getMax();
         }
 //        executorService.execute(new Thread(() -> {
 //            try {
