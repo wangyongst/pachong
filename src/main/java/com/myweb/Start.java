@@ -26,7 +26,7 @@ public class Start {
                     e.printStackTrace();
                 }
             }));
-            if( i % 5000 == 0) api.agree();
+            if( i % 3000 == 0) api.agree();
         }
     }
 }
