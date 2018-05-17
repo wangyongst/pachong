@@ -19,7 +19,7 @@ public class Start {
         api.chinese();
         int cur = 1;
         if (true) {
-            cur = api.getMax();
+            cur = api.getMax() + 1;
         }
 //        executorService.execute(new Thread(() -> {
 //            try {
