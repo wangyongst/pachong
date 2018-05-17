@@ -58,8 +58,8 @@ public class IcrisApi {
             if (i == 0) company.setNo(element.select("td").last().text());
             if (i == 1) {
                 if (element.select("td").last().select("span").first().html().contains("<br>")) {
-                    company.setName(element.select("td").last().select("span").first().html().split("<br>")[0]);
-                    company.setEnname(element.select("td").last().select("span").first().html().split("<br>")[1]);
+                    company.setEnname(element.select("td").last().select("span").first().html().split("<br>")[0]);
+                    company.setName(element.select("td").last().select("span").first().html().split("<br>")[1]);
                 } else {
                     company.setName(element.select("td").last().text());
                 }
@@ -92,9 +92,9 @@ public class IcrisApi {
             History history = new History();
             if (element.select("td").size() > 1) {
                 history.setNo(no);
-                history.setName(element.select("td").last().text());
+                history.setEnname(element.select("td").last().text());
                 history.setDate(element.select("td").first().text());
-                if (i < elements.size() - 1 && elements.get(i + 1).select("td").size() == 1) history.setEnname(elements.get(i + 1).select("td").text());
+                if (i < elements.size() - 1 && elements.get(i + 1).select("td").size() == 1) history.setName(elements.get(i + 1).select("td").text());
                 histories.add(history);
             }
         }
