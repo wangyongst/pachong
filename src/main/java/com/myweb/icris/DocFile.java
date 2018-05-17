@@ -1,11 +1,20 @@
-package com.myweb;
+package com.myweb.icris;
 
-public class document {
+public class DocFile {
+    private String id;
     private String no;
     private String name;
     private String year;
     private String submission;
     private String status;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getNo() {
         return no;

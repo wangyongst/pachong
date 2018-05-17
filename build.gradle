@@ -40,7 +40,9 @@ dependencyManagement {
 
 dependencies {
 
-    compile('commons-dbutils:commons-dbutils')
+    compile('commons-dbutils:commons-dbutils:1.7')
+
+    compile('org.apache.tomcat:tomcat-jdbc')
 
     compile('org.jsoup:jsoup:1.11.3')
 

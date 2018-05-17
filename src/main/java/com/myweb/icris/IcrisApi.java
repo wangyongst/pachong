@@ -6,8 +6,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class IcrisApi {
     private HttpClientUtil httpClientUtil = null;
@@ -40,47 +41,171 @@ public class IcrisApi {
         return EntityUtils.toString(httpClientUtil.searchDocment(no, page, select).getEntity(), "UTF-8");
     }
 
-    public boolean parseCompany(String result) {
+    public Company parseCompany(String result) {
+        Company company = new Company();
         Document document = Jsoup.parse(result);
         Elements form = document.select("form[name=docsFilterSearch]").select("table");
         if (form.isEmpty()) {
-            return false;
+            return null;
         }
-        Elements company = form.first().select("tr");
-        company.forEach(e-> System.out.println(e.text()));
-        Elements history = form.last().select("tr");
-        history.forEach(e -> System.out.println(e.text()));
-        return true;
+        Elements companyElements = form.first().select("tr");
+        companyElements.forEach(e -> System.out.println(e.text()));
+        List<Element> elements = new ArrayList<>();
+        companyElements.forEach(e -> elements.add(e));
+        for (int i = 0; i < elements.size(); i++) {
+            Element element = elements.get(i);
+            if (i == 0) company.setNo(element.select("td").last().text());
+            if (i == 1) {
+                if (element.select("td").last().select("span").first().html().contains("<br>")) {
+                    company.setName(element.select("td").last().select("span").first().html().split("<br>")[0]);
+                    company.setEnname(element.select("td").last().select("span").first().html().split("<br>")[1]);
+                } else {
+                    company.setName(element.select("td").last().text());
+                }
+            }
+            if (i == 2) company.setType(element.select("td").last().text());
+            if (i == 3) company.setIncorporation(element.select("td").last().text());
+            if (i == 4) company.setStatus(element.select("td").last().text());
+            if (i == 5) company.setRemarks(element.select("td").last().text());
+            if (i == 6) company.setMode(element.select("td").last().text());
+            if (i == 7) company.setDissorexit(element.select("td").last().text());
+            if (i == 8) company.setCharges(element.select("td").last().text());
+            if (i == 9) company.setNote(element.select("td").last().text());
+        }
+        return company;
+    }
+
+    public List<History> parseHistory(String result, String no) {
+        List<History> histories = new ArrayList<History>();
+        Document document = Jsoup.parse(result);
+        Elements form = document.select("form[name=docsFilterSearch]").select("table");
+        if (form.isEmpty()) {
+            return null;
+        }
+        Elements historyElements = form.last().select("tr");
+        historyElements.forEach(e -> System.out.println(e.text()));
+        List<Element> elements = new ArrayList<>();
+        historyElements.forEach(e -> elements.add(e));
+        for (int i = 1; i < elements.size(); i++) {
+            Element element = elements.get(i);
+            History history = new History();
+            if (element.select("td").size() > 1) {
+                history.setNo(no);
+                history.setName(element.select("td").last().text());
+                history.setDate(element.select("td").first().text());
+                if (i < elements.size() - 1 && elements.get(i + 1).select("td").size() == 1) history.setEnname(elements.get(i + 1).select("td").text());
+                histories.add(history);
+            }
+        }
+        return histories;
     }
 
     public int parseDocumentPage(String result) {
         Document document = Jsoup.parse(result);
         Elements form = document.select("form[name=cmm_order_type]").select("table");
         if (form.isEmpty()) {
-            return 0;
+            return 1;
         }
-        return Integer.parseInt(form.last().select("option").last().text());
+        if (form.last().select("option").size() > 0) return Integer.parseInt(form.last().select("option").last().text());
+        else return 1;
     }
 
-    public boolean parseDocument(String result) {
+    public List<DocFile> parseDocument(String result, String no) {
+        List<DocFile> docFiles = new ArrayList<>();
         Document document = Jsoup.parse(result);
-        Elements tds = document.select("form[name=cmm_order_type]").select("table[dwcopytype=CopyTableRow]").select("tr[bgcolor=#CCCCCC]");
-        if (tds.isEmpty()) {
-            return false;
+        Elements docElements = document.select("form[name=cmm_order_type]").select("table[dwcopytype=CopyTableRow]").select("tr[bgcolor=#CCCCCC]");
+        if (docElements.isEmpty()) {
+            return null;
         }
-        tds.forEach(e -> System.out.println(e.text()));
-        return true;
+        docElements.forEach(e -> {
+            System.out.println(e.text());
+            if (e.select("td").size() > 9) {
+                DocFile docFile = new DocFile();
+                docFile.setNo(no);
+                docFile.setId(e.select("td").get(3).text());
+                docFile.setName(e.select("td").get(4).text());
+                docFile.setYear(e.select("td").get(5).text());
+                docFile.setSubmission(e.select("td").get(6).text());
+                docFile.setStatus(e.select("td").get(10).text());
+                docFiles.add(docFile);
+            }
+        });
+        return docFiles;
     }
 
 
     public static void main(String[] args) throws Exception {
-        IcrisApi api = new IcrisApi();
-        api.agree();
-        api.chinese();
-        api.parseCompany(api.searchByNo(156489));
-        int page = api.parseDocumentPage(api.searchDocumentPage("0156489"));
-        for (int i = 1; i <= page; i++) {
-            api.parseDocument(api.searchDocument("0156489", i, page));
-        }
+//        IcrisApi api = new IcrisApi();
+//        api.agree();
+//        api.chinese();
+//        //api.pachong(13);
+//        for (int i = 1; i < 30; i++) {
+//            final int time = i;
+//            Thread.sleep(100);
+//            new Thread(() -> {
+//                try {
+//                    api.pachong(time);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    try {
+//                        Thread.sleep(1000000);
+//                    } catch (InterruptedException e1) {
+//                        e1.printStackTrace();
+//                    }
+//                }
+//            }).start();
+//        }
     }
+
+    public boolean pachong(int no) throws Exception {
+        String comReslut = searchByNo(no);
+        Company company = parseCompany(comReslut);
+        if (company == null) return false;
+        new Thread(() -> {
+            try {
+                if (JDBCUtil.select(company) == null) JDBCUtil.insert(company);
+                else JDBCUtil.update(company);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }).start();
+        List<History> histories = parseHistory(comReslut, company.getNo());
+        histories.forEach(e -> {
+            if (e != null) {
+                new Thread(() -> {
+                    try {
+                        History history = JDBCUtil.select(e);
+                        if (history == null) JDBCUtil.insert(e);
+                        else JDBCUtil.update(e);
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+                }).start();
+            }
+        });
+        int page = parseDocumentPage(searchDocumentPage(company.getNo()));
+        List<DocFile> docFiles = new ArrayList<DocFile>();
+        for (int i = 1; i <= page; i++) {
+            List<DocFile> docFileList = parseDocument(searchDocument(company.getNo(), i, page), company.getNo());
+            if (docFileList != null && docFileList.size() > 0) docFiles.addAll(docFileList);
+        }
+        docFiles.forEach(e -> {
+            if (e != null) {
+                new Thread(() -> {
+                    try {
+                        DocFile docFile = JDBCUtil.select(e);
+                        if (docFile == null) JDBCUtil.insert(e);
+                        else {
+                            e.setId(docFile.getId());
+                            JDBCUtil.update(e);
+                        }
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+                }).start();
+            }
+        });
+        return true;
+    }
+
 }

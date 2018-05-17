@@ -1,8 +1,9 @@
-package com.myweb;
+package com.myweb.icris;
 
 public class Company {
     private String no;
     private String name;
+    private String enname;
     private String type;
     private String incorporation;
     private String status;
@@ -11,6 +12,14 @@ public class Company {
     private String dissorexit;
     private String charges;
     private String note;
+
+    public String getEnname() {
+        return enname;
+    }
+
+    public void setEnname(String enname) {
+        this.enname = enname;
+    }
 
     public String getNo() {
         return no;

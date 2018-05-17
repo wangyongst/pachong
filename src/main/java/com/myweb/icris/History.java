@@ -1,9 +1,18 @@
-package com.myweb;
+package com.myweb.icris;
 
 public class History {
     private String no;
     private String date;
     private String name;
+    private String enname;
+
+    public String getEnname() {
+        return enname;
+    }
+
+    public void setEnname(String enname) {
+        this.enname = enname;
+    }
 
     public String getDate() {
         return date;
