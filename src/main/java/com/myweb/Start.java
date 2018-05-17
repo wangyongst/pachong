@@ -7,28 +7,16 @@ import java.util.concurrent.Executors;
 
 public class Start {
 
-    private static final int MAX_THREADS = 100;
-    public static final int SLEEP = 5000;
+    private static final int MAX_THREADS = 50;
+    public static final int SLEEP = 2000;
     public static ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS);
     private static final int MAXNO = 2000000;
 
     public static void main(String[] args) throws Exception {
-
         IcrisApi api = new IcrisApi();
         api.agree();
         api.chinese();
-        int cur = 0;
-        if (true) {
-            cur = api.getMax();
-        }
-//        executorService.execute(new Thread(() -> {
-//            try {
-//                boolean flag = api.pachong(10);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }));
-        for (int i = cur; i < MAXNO; i++) {
+        for (int i = api.getMax(); i < MAXNO; i++) {
             final int time = i;
             Thread.sleep(SLEEP);
             executorService.execute(new Thread(() -> {
@@ -38,6 +26,7 @@ public class Start {
                     e.printStackTrace();
                 }
             }));
+            if( i % 5000 == 0) api.agree();
         }
     }
 }

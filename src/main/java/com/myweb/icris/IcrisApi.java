@@ -161,7 +161,7 @@ public class IcrisApi {
         List<History> histories = parseHistory(comReslut, company.getNo());
         histories.forEach(e -> {
             if (e != null) {
-                new Thread(() -> {
+                Start.executorService.execute(new Thread(() -> {
                     try {
                         History history = JDBCUtil.select(e);
                         if (history == null) JDBCUtil.insert(e);
@@ -169,7 +169,7 @@ public class IcrisApi {
                     } catch (SQLException e1) {
                         e1.printStackTrace();
                     }
-                }).start();
+                }));
             }
         });
         int page = parseDocumentPage(searchDocumentPage(company.getNo()));
