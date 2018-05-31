@@ -10,7 +10,6 @@ public class Start {
     private static final int MAX_THREADS = 50;
     public static final int SLEEP = 2000;
     public static ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS);
-    private static final int MAXNO = 2000000;
 
     public static void main(String[] args) throws Exception {
         IcrisApi api = new IcrisApi();
