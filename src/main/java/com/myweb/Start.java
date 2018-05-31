@@ -16,17 +16,17 @@ public class Start {
         IcrisApi api = new IcrisApi();
         api.agree();
         api.chinese();
-        for (int i = api.getMax(); i < MAXNO; i++) {
-            final int time = i;
+        while(true) {
+            final int time = api.getMax();
             Thread.sleep(SLEEP);
             executorService.execute(new Thread(() -> {
                 try {
-                   boolean flag = api.pachong(time);
+                   boolean flag = api.pachong(time + 1);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }));
-            if( i % 3000 == 0) api.agree();
+            if( time % 3000 == 0) api.agree();
         }
     }
 }
