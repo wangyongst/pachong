@@ -18,15 +18,18 @@ public class Start {
         while(true) {
             try {
                 final int time = api.getMax();
-                Thread.sleep(SLEEP);
-                executorService.execute(new Thread(() -> {
-                    try {
-                        boolean flag = api.pachong(time + 1);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }));
-                if (time % 3000 == 0) api.agree();
+                for(int i = time; i < 3000000 ; i ++) {
+                    final int count = i;
+                    Thread.sleep(SLEEP);
+                    executorService.execute(new Thread(() -> {
+                        try {
+                            boolean flag = api.pachong(count);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }));
+                    if (i % 3000 == 0) api.agree();
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
