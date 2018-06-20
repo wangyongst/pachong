@@ -16,16 +16,20 @@ public class Start {
         api.agree();
         api.chinese();
         while(true) {
-            final int time = api.getMax();
-            Thread.sleep(SLEEP);
-            executorService.execute(new Thread(() -> {
-                try {
-                   boolean flag = api.pachong(time + 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }));
-            if( time % 3000 == 0) api.agree();
+            try {
+                final int time = api.getMax();
+                Thread.sleep(SLEEP);
+                executorService.execute(new Thread(() -> {
+                    try {
+                        boolean flag = api.pachong(time + 1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }));
+                if (time % 3000 == 0) api.agree();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }
