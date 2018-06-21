@@ -11,10 +11,14 @@ public class Start {
     public static final int SLEEP = 2000;
     public static ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         IcrisApi api = new IcrisApi();
-        api.agree();
-        api.chinese();
+        try {
+            api.agree();
+            api.chinese();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         while(true) {
             try {
                 final int time = api.getMax();
@@ -32,6 +36,7 @@ public class Start {
                 }
             }catch (Exception e){
                 e.printStackTrace();
+                continue;
             }
         }
     }

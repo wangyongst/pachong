@@ -14,8 +14,12 @@ import java.util.List;
 public class IcrisApi {
     private HttpClientUtil httpClientUtil = null;
 
-    public IcrisApi() throws Exception {
-        httpClientUtil = new HttpClientUtil();
+    public IcrisApi(){
+        try {
+            httpClientUtil = new HttpClientUtil();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void agree() throws Exception {
