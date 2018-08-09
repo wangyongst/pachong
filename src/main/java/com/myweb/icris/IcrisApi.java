@@ -145,6 +145,12 @@ public class IcrisApi {
         else return Integer.parseInt(company.getNo());
     }
 
+    public int getSubMax() throws SQLException {
+        Company company = JDBCUtil.countSub();
+        if (company == null) return 1;
+        else return Integer.parseInt(company.getNo());
+    }
+
     public boolean pachong(int no) throws Exception {
         String comReslut = searchByNo(no);
         Company company = parseCompany(comReslut);

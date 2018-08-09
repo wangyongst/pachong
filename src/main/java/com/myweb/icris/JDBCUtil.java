@@ -27,6 +27,11 @@ public class JDBCUtil {
         return (Company) new QueryRunner(JDBCDataSource.getDataSource()).query(sql, new BeanHandler(Company.class));
     }
 
+    static Company countSub() throws SQLException {
+        String sql = "select * from company where no = (select max(no)  from company where no < 2191825)";
+        return (Company) new QueryRunner(JDBCDataSource.getDataSource()).query(sql, new BeanHandler(Company.class));
+    }
+
     static void insert(History history) throws SQLException {
         String sql = "insert into history(no,name,enname,date) values(?,?,?,?)";
         new QueryRunner(JDBCDataSource.getDataSource()).update(sql, history.getNo(), history.getName(), history.getEnname(), history.getDate());
