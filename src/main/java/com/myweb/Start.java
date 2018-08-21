@@ -21,7 +21,7 @@ public class Start {
         }
         while(true) {
             try {
-                final int time = api.getSubMax();
+                final int time = api.getMax();
                 for(int i = time; i < 3000000 ; i ++) {
                     final int count = i;
                     Thread.sleep(SLEEP);
@@ -39,6 +39,5 @@ public class Start {
                 continue;
             }
         }
-
     }
 }
