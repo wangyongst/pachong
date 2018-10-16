@@ -11,7 +11,7 @@ public class Start {
     public static final int SLEEP = 5000;
     public static ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS);
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         IcrisApi api = new IcrisApi();
         try {
             api.agree();
@@ -19,10 +19,10 @@ public class Start {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        while(true) {
+        while (true) {
             try {
-                final int time = api.getMax();
-                for(int i = time; i < 3000000 ; i ++) {
+                int max = api.getMax();
+                for (int i = 0; i < max; i++) {
                     final int count = i;
                     Thread.sleep(SLEEP);
                     executorService.execute(new Thread(() -> {
@@ -32,9 +32,20 @@ public class Start {
                             e.printStackTrace();
                         }
                     }));
-                    if (i % 3000 == 0) api.agree();
+                    if (i % 3000 == 0) {
+                        api.agree();
+                        max = api.getMax();
+                        final int maxplus = max + 1;
+                        executorService.execute(new Thread(() -> {
+                            try {
+                                boolean flag = api.pachong(maxplus);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }));
+                    }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 continue;
             }
